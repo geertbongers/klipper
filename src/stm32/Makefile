@@ -42,6 +42,15 @@ $(OUT)klipper.bin: $(OUT)klipper.elf
 	@echo "  Creating hex file $@"
 	$(Q)$(OBJCOPY) -O binary $< $@
 
+#MKS Robin rules
+robin_mini: $(OUT)klipper.bin
+	@echo "  XORing binary klipper.bin into robin_mini.bin"
+	$(Q)$(PYTHON) ./scripts/mks_robin_xor.py $(OUT)klipper.bin $(OUT)robin_mini.bin
+
+robin_nano: $(OUT)klipper.bin
+	@echo "  XORing binary klipper.bin into robin_nano.bin"
+	$(Q)$(PYTHON) ./scripts/mks_robin_xor.py $(OUT)klipper.bin $(OUT)robin_nano.bin
+
 # Flash rules
 FLASH_TYPE-$(CONFIG_MACH_STM32F1) := stm32f1
 FLASH_TYPE-$(CONFIG_MACH_STM32F4) := stm32f4
