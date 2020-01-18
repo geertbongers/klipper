@@ -126,3 +126,23 @@ config INLINE_STEPPER_HACK
     bool
     depends on HAVE_GPIO
     default y
+
+config MKS_BOARDS
+    depends on MACH_STM32F1
+    bool "Is STM32F1 are MKS Robin family board?"
+    default n    
+
+choice
+    prompt "Select MKS board"
+    depends on MKS_BOARDS
+    
+config MKS_ROBIN_MINI
+    bool "MKS Robin mini board"
+config MKS_ROBIN_NANO
+    bool "MKS Robin nano board"
+
+endchoice
+
+#config FLASH_SIZE
+#    hex
+#    default 0x79000 if MKS_BOARDS && MACH_STM32F103xE

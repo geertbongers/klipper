@@ -161,4 +161,27 @@ clock_setup(void)
     // Disable JTAG to free PA15, PB3, PB4
     enable_pclock(AFIO_BASE);
     AFIO->MAPR = AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
+    
+    //kind a beep
+    //RCC->APB2ENR|=RCC_APB2ENR_IOPEEN;
+    //GPIOE->CRL = 0x200000;
+    //GPIOE->ODR &= ~(1U << 5);
+    
+    // reset LCD
+    //RCC->APB2ENR|=RCC_APB2ENR_IOPEEN;
+    GPIOC->CRL = 0x2000000;
+    GPIOC->ODR &= ~(1U << 6);
+    GPIOC->CRL;
+    
+    if (CONFIG_MKS_BOARDS) {
+	// Disable FSMC to release I2C1
+	RCC->AHBENR &= ~RCC_AHBENR_FSMCEN;
+        //disable_pclock(RCC_AHBENR_FSMCEN);
+	// Disable SDIO enabled by bootloader
+	RCC->AHBENR &= ~RCC_AHBENR_DMA2EN;
+        //disable_pclock(RCC_AHBENR_DMA2EN);
+	// Disable DMA2 enabled by bootloader
+	RCC->AHBENR &= ~RCC_AHBENR_SDIOEN;
+        //disable_pclock(RCC_AHBENR_SDIOEN);
+    }
 }
