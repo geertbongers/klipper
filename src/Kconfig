@@ -142,7 +142,3 @@ config MKS_ROBIN_NANO
     bool "MKS Robin nano board"
 
 endchoice
-
-#config FLASH_SIZE
-#    hex
-#    default 0x79000 if MKS_BOARDS && MACH_STM32F103xE
