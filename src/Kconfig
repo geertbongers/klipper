@@ -132,6 +132,11 @@ config MKS_BOARDS
     bool "Is STM32F1 are MKS Robin family board?"
     default n    
 
+config ALF_U20_U30_BOARD
+    depends on MACH_STM32F1
+    bool "Is STM32F1 are Alfawise U20/30 board?"
+    default n    
+
 choice
     prompt "Select MKS board"
     depends on MKS_BOARDS

@@ -162,7 +162,7 @@ clock_setup(void)
     enable_pclock(AFIO_BASE);
     AFIO->MAPR = AFIO_MAPR_SWJ_CFG_JTAGDISABLE;
     
-    if (CONFIG_MKS_BOARDS) {
+    if (CONFIG_MKS_BOARDS || CONFIG_ALF_U20_U30_BOARD) {
 	// reset LCD
 	RCC->APB2ENR|=RCC_APB2ENR_IOPCEN;
 	GPIOC->CRL = 0x2000000;

@@ -65,6 +65,7 @@ config FLASH_SIZE
     hex
     default 0x10000 if MACH_STM32F103xB
     default 0x79000 if MKS_BOARDS && MACH_STM32F103xE
+    default 0x70000 if ALF_U20_U30_BOARD && MACH_STM32F103xE
     default 0x80000 if MACH_STM32F103xE
     default 0x80000 if MACH_STM32F4
 
@@ -76,6 +77,7 @@ config RAM_SIZE
     hex
     default 0x5000 if MACH_STM32F103xB
     default 0xFFD8 if MKS_BOARDS && MACH_STM32F103xE
+    default 0xFFD8 if ALF_U20_U30_BOARD && MACH_STM32F103xE
     default 0x10000 if MACH_STM32F103xE
     default 0x20000 if MACH_STM32F4
 
@@ -91,6 +93,8 @@ choice
         bool "28KiB bootloader" if MACH_STM32F103xB || MACH_STM32F103xE
     config STM32_FLASH_START_8000
         bool "32KiB bootloader (SKR-PRO)" if MACH_STM32F407
+    config STM32_FLASH_START_10000
+        bool "64KiB bootloader (Alfawise U20/30)" if MACH_STM32F103xB || MACH_STM32F103xE || ALF_U20_U30_BOARD
     config STM32_FLASH_START_0000
         bool "No bootloader"
 endchoice
@@ -99,6 +103,7 @@ config FLASH_START
     default 0x8002000 if STM32_FLASH_START_2000
     default 0x8007000 if STM32_FLASH_START_7000
     default 0x8008000 if STM32_FLASH_START_8000
+    default 0x8010000 if STM32_FLASH_START_10000
     default 0x8000000
 
 choice
