@@ -3,9 +3,8 @@
 # Copyright (C) 2020  Eric Callahan <arksine.code@gmail.com>
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
-
-import bus
 import logging
+from . import bus
 
 REPORT_TIME = .8
 BME280_CHIP_ADDR = 0x76
@@ -28,6 +27,7 @@ class BME280:
         self.reactor = self.printer.get_reactor()
         self.i2c = bus.MCU_I2C_from_config(
             config, default_addr=BME280_CHIP_ADDR, default_speed=100000)
+        self.mcu = self.i2c.get_mcu()
         self.os_temp = config.getint('bme280_oversample_temp', 2)
         self.os_hum = config.getint('bme280_oversample_hum', 2)
         self.os_pres = config.getint('bme280_oversample_pressure', 2)
@@ -111,13 +111,20 @@ class BME280:
         meas = self.os_temp << 5 | self.os_pres << 2 | MODE
         self.write_register('CTRL_MEAS', meas)
 
-        # wait until results are ready
-        status = self.read_register('STATUS', 1)[0]
-        while status & STATUS_MEASURING:
-            self.reactor.pause(self.reactor.monotonic() + self.max_sample_time)
+        try:
+            # wait until results are ready
             status = self.read_register('STATUS', 1)[0]
+            while status & STATUS_MEASURING:
+                self.reactor.pause(
+                    self.reactor.monotonic() + self.max_sample_time)
+                status = self.read_register('STATUS', 1)[0]
 
-        data = self.read_register('PRESSURE_MSB', 8)
+            data = self.read_register('PRESSURE_MSB', 8)
+        except Exception:
+            logging.exception("BME280: Error reading data")
+            self.temp = self.pressure = self.humidity = .0
+            return self.reactor.NEVER
+
         pressure_raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4)
         temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
         humid_raw = (data[6] << 8) | data[7]
@@ -126,7 +133,7 @@ class BME280:
         self.pressure = self._compensate_pressure(pressure_raw) / 100.
         self.humidity = self._compensate_humidity(humid_raw)
         measured_time = self.reactor.monotonic()
-        self._callback(measured_time, self.temp)
+        self._callback(self.mcu.estimated_print_time(measured_time), self.temp)
         return measured_time + REPORT_TIME
 
     def _compensate_temp(self, raw_temp):
@@ -191,5 +198,5 @@ class BME280:
 
 def load_config(config):
     # Register sensor
-    pheater = config.get_printer().lookup_object("heater")
-    pheater.add_sensor_factory("BME280", BME280)
+    pheaters = config.get_printer().load_object(config, "heaters")
+    pheaters.add_sensor_factory("BME280", BME280)

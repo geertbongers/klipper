@@ -17,7 +17,7 @@ install_packages()
     PKGLIST="${PKGLIST} avrdude gcc-avr binutils-avr avr-libc"
     # ARM chip installation and building
     PKGLIST="${PKGLIST} stm32flash dfu-util libnewlib-arm-none-eabi"
-    PKGLIST="${PKGLIST} gcc-arm-none-eabi binutils-arm-none-eabi"
+    PKGLIST="${PKGLIST} gcc-arm-none-eabi binutils-arm-none-eabi libusb-1.0"
 
     # Update system package info
     report_status "Running apt-get update..."
@@ -34,11 +34,9 @@ create_virtualenv()
     report_status "Updating python virtual environment..."
 
     # Create virtualenv if it doesn't already exist
-    [ ! -d ${PYTHONDIR} ] && virtualenv --no-setuptools ${PYTHONDIR}
-    [ ! -x ${PYTHONDIR}/bin/pip ] && virtualenv ${PYTHONDIR}
+    [ ! -d ${PYTHONDIR} ] && virtualenv ${PYTHONDIR}
 
     # Install/update dependencies
-    ${PYTHONDIR}/bin/pip install setuptools==44.0.0
     ${PYTHONDIR}/bin/pip install -r ${SRCDIR}/scripts/klippy-requirements.txt
 }
 

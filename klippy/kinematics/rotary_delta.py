@@ -77,7 +77,7 @@ class RotaryDeltaKinematics:
             "Delta max build height %.2fmm (radius tapered above %.2fmm)"
             % (self.max_z, self.limit_z))
         self.set_position([0., 0., 0.], ())
-    def get_steppers(self, flags=""):
+    def get_steppers(self):
         return [s for rail in self.rails for s in rail.get_steppers()]
     def calc_tag_position(self):
         spos = [rail.get_tag_position() for rail in self.rails]
@@ -121,7 +121,7 @@ class RotaryDeltaKinematics:
             move.limit_speed(self.max_z_velocity, move.accel)
             limit_xy2 = -1.
         self.limit_xy2 = limit_xy2
-    def get_status(self):
+    def get_status(self, eventtime):
         return {'homed_axes': '' if self.need_home else 'XYZ'}
     def get_calibration(self):
         return self.calibration
